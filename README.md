@@ -1,7 +1,7 @@
-# TalentScout Hiring Assistant
+# Hiring Assistant
 
 ## Project Overview
-TalentScout Hiring Assistant is an AI-powered chatbot designed to assist recruitment agencies in the initial screening of tech candidates. The chatbot collects essential candidate information and generates relevant technical questions based on the candidate's declared tech stack.
+Hiring Assistant is an AI-powered chatbot designed to assist recruitment agencies in the initial screening of tech candidates. The chatbot collects essential candidate information and generates relevant technical questions based on the candidate's declared tech stack.
 
 ## Features
 - **Automated Information Collection**: Gathers candidate details including name, contact information, experience, desired position, location, and tech stack.
@@ -43,8 +43,8 @@ The system employs sophisticated prompt engineering techniques:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/Taskmaster-1/Talentscout-hiring-chatbot.git
-   cd Talentscout-hiring-chatbot
+   git clone https://github.com/Taskmaster-1/Hiring-Assistant.git
+   cd Hiring-Assistant
    ```
 
 2. Install dependencies:
