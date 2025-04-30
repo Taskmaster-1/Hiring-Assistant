@@ -187,7 +187,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ## 🌐 Deployed Application
 
 ### 🔗 Live 
-- **Render**: [hiring-assistant.onrender.com]
+- **Render**: [https://hiring-assistant.onrender.com]
 
 ## Contact
 For questions or feedback, please contact: [i.am.vivekyadav5223@gmail.com](mailto:i.am.vivekyadav5223@gmail.com)
