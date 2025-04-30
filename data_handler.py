@@ -3,8 +3,8 @@ import os
 import hashlib
 import uuid
 from datetime import datetime
-import streamlit as st
-from cryptography.fernet import Fernet
+import streamlit as st # type: ignore
+from cryptography.fernet import Fernet # type: ignore
 
 class DataHandler:
     """

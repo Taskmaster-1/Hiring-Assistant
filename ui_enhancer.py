@@ -483,7 +483,6 @@ class UIEnhancer:
         for i, (field, name) in enumerate(fields):
             with cols[i]:
                 if candidate_info.get(field):
-                    # Completed step
                     st.markdown(f"""
                     <div style="text-align: center;">
                         <div style="width: 32px; height: 32px; border-radius: 50%; background-color: {self.success_color}; 
@@ -525,7 +524,6 @@ class UIEnhancer:
                     </div>
                     """, unsafe_allow_html=True)
         
-        # Add a divider
         st.sidebar.markdown("---")
         
         # Display collected information

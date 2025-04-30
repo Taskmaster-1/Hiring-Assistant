@@ -10,9 +10,9 @@ from data_handler import DataHandler
 from language_handler import LanguageHandler
 from performance_optimizer import PerformanceOptimizer
 from ui_enhancer import UIEnhancer
-from sentiment_analyzer import SentimentAnalyzer  # Import the new SentimentAnalyzer class
+from sentiment_analyzer import SentimentAnalyzer  
 
-# Set page configuration with a more professional look
+
 st.set_page_config(
     page_title="TalentScout Hiring Assistant", 
     page_icon="🧑‍💻", 
@@ -34,7 +34,7 @@ if 'language_handler' not in st.session_state:
     st.session_state.language_handler = None  # Will be initialized after API key is available
     
 if 'sentiment_analyzer' not in st.session_state:
-    st.session_state.sentiment_analyzer = None  # Will be initialized after API key is available
+    st.session_state.sentiment_analyzer = None  
     
 if 'candidate_info' not in st.session_state:
     st.session_state.candidate_info = {
@@ -71,10 +71,8 @@ page_load_start = time.time()
 main_container = st.container()
 
 with main_container:
-    # Display logo
     st.session_state.ui_enhancer.display_logo()
 
-    # Use the welcome header from UIEnhancer instead of basic title
     st.session_state.ui_enhancer.create_welcome_header()
 
 # Get API key
@@ -105,14 +103,12 @@ with st.sidebar:
     st.markdown("### 🌐 Language Settings")
     selected_language = st.session_state.language_handler.create_language_selector()
     
-    # Add a divider
     st.markdown("---")
     
     # Display progress tracker in sidebar
     st.markdown("### 📊 Application Progress")
     st.session_state.ui_enhancer.create_progress_tracker(st.session_state.candidate_info)
     
-    # Add a divider
     st.markdown("---")
     
     # Display privacy notice in sidebar
@@ -205,15 +201,12 @@ for message in st.session_state.messages:
         else:
             st.markdown(message["content"])
 
-# Create a custom chat input with improved styling at the bottom
 user_input = st.chat_input("Type your response here...")
 
 if user_input:
-    # Immediately display the user message
     with st.chat_message("user"):
         st.markdown(user_input)
     
-    # Add user message to the session state
     st.session_state.messages.append({"role": "user", "content": user_input})
     
     # Detect language of user input
@@ -244,7 +237,6 @@ if user_input:
         if selected_language != "en":
             farewell_message = st.session_state.language_handler.translate_text(farewell_message, selected_language)
         
-        # Display the farewell message immediately
         with st.chat_message("assistant"):
             st.markdown(farewell_message)
             
@@ -280,7 +272,6 @@ if user_input:
     """
     enhanced_prompt = prompt + "\n\n" + sentiment_info
     
-    # Optimize the prompt before sending
     optimized_prompt = st.session_state.performance_optimizer.preprocess_prompt(enhanced_prompt)
     
     # Show typing animation while waiting for response
@@ -291,7 +282,6 @@ if user_input:
             # Apply caching decorator to the API call
             cached_chat_with_groq = st.session_state.performance_optimizer.cache_api_response(chat_with_groq)
             
-            # Apply rate limiting decorator
             rate_limited_chat = PerformanceOptimizer.rate_limit(cached_chat_with_groq)
             
             # Track response time
@@ -307,10 +297,8 @@ if user_input:
                 response = st.session_state.language_handler.translate_json_response(response, selected_language)
             
             try:
-                # Use the optimized JSON parser
                 parsed_response = st.session_state.performance_optimizer.optimize_json_parse(response)
                 
-                # Check if parsing returned an error
                 if "error" in parsed_response:
                     st.error(f"Error parsing response: {parsed_response['error']}")
                     fallback_message = "I apologize for the technical issue. Could you please repeat your last answer?"
@@ -321,14 +309,11 @@ if user_input:
                     if value and value != "unknown" and value != "null":
                         st.session_state.candidate_info[key] = value
                 
-                # Display only the response text
                 st.markdown(parsed_response["response"])
                 st.session_state.messages.append({"role": "assistant", "content": parsed_response["response"]})
                 
-                # Update progress tracker after collecting new information
                 st.session_state.ui_enhancer.create_progress_tracker(st.session_state.candidate_info)
                 
-                # Create info card for each milestone completion (new integration)
                 milestone_messages = {
                     "name": ("Personal Info Captured", "Great! I've got your basic information. Let's continue with some more details.", "👤"),
                     "tech_stack": ("Tech Stack Identified", "Thanks for sharing your technical expertise. This helps us match you with relevant positions.", "💻"),
@@ -336,7 +321,6 @@ if user_input:
                     "location": ("Location Preferences Saved", "I've noted your location preferences. This helps us find opportunities in your area.", "📍")
                 }
                 
-                # Check if we just learned any milestone info
                 for key, (title, message, icon) in milestone_messages.items():
                     if key in parsed_response["candidate_info"] and parsed_response["candidate_info"][key] and key in st.session_state.candidate_info:
                         if parsed_response["candidate_info"][key] == st.session_state.candidate_info[key]:
@@ -373,19 +357,15 @@ if user_input:
                             }}
                             """
 
-                            # Optimize the prompt
                             optimized_tech_prompt = st.session_state.performance_optimizer.preprocess_prompt(tech_questions_prompt)
                             
-                            # Apply caching and rate limiting
                             cached_chat = st.session_state.performance_optimizer.cache_api_response(chat_with_groq)
                             rate_limited_chat = PerformanceOptimizer.rate_limit(cached_chat)
                             
-                            # Track response time
                             response_start = time.time()
                             questions_response = rate_limited_chat(api_key, "", optimized_tech_prompt)
                             response_time = time.time() - response_start
                             
-                            # Record the response time
                             st.session_state.performance_optimizer.record_response_time(response_time)
                             
                             # Translate technical questions if needed
@@ -402,7 +382,6 @@ if user_input:
                                         questions_data['questions'] = translated_questions
                                         questions_response = json.dumps(questions_data)
                                 except json.JSONDecodeError:
-                                    # If can't parse JSON, translate the whole response
                                     questions_response = st.session_state.language_handler.translate_text(
                                         questions_response, selected_language
                                     )
@@ -582,5 +561,5 @@ with st.sidebar.expander("Admin Tools", expanded=False):
         st.session_state.performance_optimizer.response_times = []
         st.success("Performance stats reset")
 
-# Add footer from UIEnhancer
+
 st.session_state.ui_enhancer.create_footer()

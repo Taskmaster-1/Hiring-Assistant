@@ -25,11 +25,10 @@ class PerformanceOptimizer:
         self.cache_hits = 0
         self.cache_misses = 0
         
-        # For tracking performance
+        # tracking performance
         self.response_times = []
-        self.max_response_times = 20  # Keep track of the last 20 response times
+        self.max_response_times = 20  
         
-        # For batching requests (not used directly but as a pattern)
         self.batch_queue = []
         self.batch_lock = threading.Lock()
         
@@ -54,14 +53,11 @@ class PerformanceOptimizer:
         """
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            # Generate a cache key based on function arguments
-            # Skip the API key argument for caching purposes
-            cache_args = args[1:]  # Skip the first arg (usually self or api_key)
+            cache_args = args[1:]  
             key_parts = [str(arg) for arg in cache_args]
             for k, v in sorted(kwargs.items()):
                 key_parts.append(f"{k}:{v}")
             
-            # Create a hash of the arguments
             cache_key = hashlib.md5(str(key_parts).encode()).hexdigest()
             
             # Check if result is in cache
@@ -85,7 +81,6 @@ class PerformanceOptimizer:
             st.session_state.performance_stats['cache_misses'] += 1
             st.session_state.performance_stats['api_calls'] += 1
             
-            # Add to cache
             self.cache[cache_key] = result
             self.cache.move_to_end(cache_key)
             
@@ -139,10 +134,8 @@ class PerformanceOptimizer:
         # Remove redundant whitespace
         optimized = " ".join(prompt.split())
         
-        # Limit extremely long prompts (helps with token usage)
         max_chars = 10000
         if len(optimized) > max_chars:
-            # Try to truncate at a sentence or paragraph boundary
             cutoff_points = [
                 optimized.rfind("\n\n", 0, max_chars),
                 optimized.rfind(". ", 0, max_chars),
@@ -151,7 +144,6 @@ class PerformanceOptimizer:
                 max_chars
             ]
             
-            # Use the first valid cutoff point
             cutoff = next((p for p in cutoff_points if p > 0), max_chars)
             optimized = optimized[:cutoff+1]
         
@@ -176,7 +168,6 @@ class PerformanceOptimizer:
         # Process the entire batch
         results = process_func(self.batch_queue)
         
-        # Clear the processed batch
         with self.batch_lock:
             self.batch_queue = []
         
@@ -196,15 +187,13 @@ class PerformanceOptimizer:
             cache_efficiency = (stats['cache_hits'] / cache_total) * 100
             st.sidebar.text(f"Cache Efficiency: {cache_efficiency:.1f}%")
             
-            # Create a simple bar chart
             hits_bar = "■" * int(cache_efficiency / 5)
             misses_bar = "□" * (20 - int(cache_efficiency / 5))
             st.sidebar.text(f"Cache Hits/Misses: {hits_bar}{misses_bar}")
         
-        # Response time graph would be better with Streamlit's native charting
         if self.response_times:
             st.sidebar.text("Recent Response Times (s):")
-            # Create a simple ASCII chart of response times
+
             for t in self.response_times[-5:]:
                 bar = "■" * int(t * 10)
                 st.sidebar.text(f"{t:.2f}s {bar}")
@@ -220,15 +209,12 @@ class PerformanceOptimizer:
             dict: Parsed JSON or error dict
         """
         try:
-            # Try standard JSON parsing first
             return json.loads(json_str)
         except json.JSONDecodeError as e:
             try:
-                # Try to fix common JSON issues and parse again
                 fixed_json = self._fix_json_string(json_str)
                 return json.loads(fixed_json)
             except:
-                # Return a structured error
                 return {
                     "error": "Failed to parse JSON response",
                     "original": json_str,
@@ -245,17 +231,16 @@ class PerformanceOptimizer:
         Returns:
             str: Attempted fix of the JSON string
         """
-        # Remove any markdown code block indicators
+        
         if "```json" in json_str:
             json_str = json_str.replace("```json", "")
         if "```" in json_str:
             json_str = json_str.replace("```", "")
             
-        # Fix missing quotes around keys
+        
         import re
         json_str = re.sub(r'([{,])\s*([a-zA-Z0-9_]+)\s*:', r'\1"\2":', json_str)
         
-        # Fix trailing commas
         json_str = re.sub(r',\s*}', '}', json_str)
         json_str = re.sub(r',\s*]', ']', json_str)
             
@@ -272,7 +257,7 @@ class PerformanceOptimizer:
             wrapper: Decorated function
         """
         last_call_time = {}
-        min_interval = 0.1  # Minimum interval between calls in seconds
+        min_interval = 0.1  
         
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -283,13 +268,11 @@ class PerformanceOptimizer:
             if func_name in last_call_time:
                 elapsed = current_time - last_call_time[func_name]
                 if elapsed < min_interval:
-                    # Wait the remaining time
                     time.sleep(min_interval - elapsed)
             
-            # Update the last call time
             last_call_time[func_name] = time.time()
             
-            # Call the function
+            
             return func(*args, **kwargs)
         
         return wrapper
